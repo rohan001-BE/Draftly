@@ -5,7 +5,7 @@ import { EditorContent, useEditor, type Editor } from '@tiptap/react';
 import { motion } from 'framer-motion';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
-import Underline from '@tiptap/extension-underline';
+import Underline from '@tiptap/extension-underline/dist/index.js';
 import { EditorToolbar } from './editor-toolbar';
 import type { DocumentJsonContent } from '@/types/document';
 import { EMPTY_TIPTAP_DOCUMENT } from '@/types/document';
