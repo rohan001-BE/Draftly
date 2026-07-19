@@ -83,8 +83,8 @@ export default function SignupPage() {
 
           <CardContent className="space-y-5 px-8 pb-10">
             {/* Email Input */}
-            <div className="space-y-2">
-              <label className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Email Address</label>
+            <div className="space-y-5">
+              <label className="block mb-2 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Email Address</label>
               <Input
                 type="email"
                 placeholder="name@example.com"
@@ -96,8 +96,8 @@ export default function SignupPage() {
             </div>
 
             {/* Password Input */}
-            <div className="space-y-2">
-              <label className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Password</label>
+            <div className="space-y-5">
+              <label className="block mb-2 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Password</label>
               <Input
                 type="password"
                 placeholder="••••••••"

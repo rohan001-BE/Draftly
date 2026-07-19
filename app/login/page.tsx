@@ -83,8 +83,8 @@ export default function LoginPage() {
               </CardHeader>
 
               <CardContent className="space-y-5 px-6 pb-8 sm:px-8">
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Email Address</label>
+                <div className="space-y-5">
+                  <label className="block mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Email Address</label>
                   <Input
                     type="email"
                     placeholder="name@example.com"
@@ -95,8 +95,8 @@ export default function LoginPage() {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Password</label>
+                <div className="space-y-5">
+                  <label className="block mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Password</label>
                   <Input
                     type="password"
                     placeholder="••••••••"
