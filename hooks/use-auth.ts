@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import { getSupabase } from '@/lib/supabaseClient';
+import { createBrowserClientFromConfig } from '@/lib/supabase/browser';
 import { User, UserRole } from '@/lib/types';
 
 interface UseAuthReturn {
@@ -36,7 +37,21 @@ export function useAuth(): UseAuthReturn {
   const [loading, setLoading] = useState(true);
 
   const loadSession = useCallback(async () => {
-    const client = getSupabase();
+    let client = getSupabase();
+    if (!client && typeof window !== 'undefined') {
+      try {
+        const res = await fetch('/api/runtime-config');
+        if (res.ok) {
+          const { url, anonKey } = await res.json();
+          if (url && anonKey) {
+            client = createBrowserClientFromConfig(url, anonKey);
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+
     if (!client) {
       setLoading(false);
       return;
@@ -54,7 +69,21 @@ export function useAuth(): UseAuthReturn {
     loadSession();
 
     const setupListener = async () => {
-      const client = getSupabase();
+      let client = getSupabase();
+      if (!client && typeof window !== 'undefined') {
+        try {
+          const res = await fetch('/api/runtime-config');
+          if (res.ok) {
+            const { url, anonKey } = await res.json();
+            if (url && anonKey) {
+              client = createBrowserClientFromConfig(url, anonKey);
+            }
+          }
+        } catch {
+          // ignore
+        }
+      }
+
       if (!client) return;
 
       const { data: authListener } = client.auth.onAuthStateChange((_event, session) => {
@@ -76,7 +105,15 @@ export function useAuth(): UseAuthReturn {
 
   const login = useCallback(async (email: string, password: string) => {
     setLoading(true);
-    const client = getSupabase();
+    let client = getSupabase();
+    if (!client && typeof window !== 'undefined') {
+      const res = await fetch('/api/runtime-config');
+      if (res.ok) {
+        const { url, anonKey } = await res.json();
+        if (url && anonKey) client = createBrowserClientFromConfig(url, anonKey);
+      }
+    }
+
     if (!client) {
       setLoading(false);
       throw new Error('Supabase not configured');
@@ -92,18 +129,24 @@ export function useAuth(): UseAuthReturn {
 
   const signup = useCallback(async (email: string, password: string) => {
     setLoading(true);
-    const response = await fetch('/api/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const json = await response.json();
-    setLoading(false);
-
-    if (!response.ok || json?.error) {
-      throw new Error(json?.error || 'Sign up failed. Please try again.');
+    let client = getSupabase();
+    if (!client && typeof window !== 'undefined') {
+      const res = await fetch('/api/runtime-config');
+      if (res.ok) {
+        const { url, anonKey } = await res.json();
+        if (url && anonKey) client = createBrowserClientFromConfig(url, anonKey);
+      }
     }
+
+    if (!client) {
+      setLoading(false);
+      throw new Error('Supabase not configured');
+    }
+
+    const { error } = await client.auth.signUp(
+      { email, password },
+      { emailRedirectTo: `${window.location.origin}/auth/callback` },
+    );
     setLoading(false);
 
     if (error) {
@@ -112,7 +155,15 @@ export function useAuth(): UseAuthReturn {
   }, []);
 
   const logout = useCallback(async () => {
-    const client = getSupabase();
+    let client = getSupabase();
+    if (!client && typeof window !== 'undefined') {
+      const res = await fetch('/api/runtime-config');
+      if (res.ok) {
+        const { url, anonKey } = await res.json();
+        if (url && anonKey) client = createBrowserClientFromConfig(url, anonKey);
+      }
+    }
+
     if (!client) return;
 
     await client.auth.signOut();
