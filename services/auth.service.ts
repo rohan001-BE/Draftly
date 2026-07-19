@@ -1,10 +1,28 @@
 import { User, ApiResponse } from '@/lib/types';
 import { getSupabase } from '@/lib/supabaseClient';
+import { createBrowserClientFromConfig } from '@/lib/supabase/browser';
+
+async function ensureClient() {
+  let supabase = getSupabase();
+  if (supabase) return supabase;
+  if (typeof window === 'undefined') return null;
+
+  try {
+    const res = await fetch('/api/runtime-config');
+    if (!res.ok) return null;
+    const { url, anonKey } = await res.json();
+    if (url && anonKey) return createBrowserClientFromConfig(url, anonKey);
+  } catch {
+    return null;
+  }
+
+  return null;
+}
 
 export class AuthService {
   static async login(email: string, password: string): Promise<ApiResponse<User>> {
     try {
-      const supabase = getSupabase();
+      const supabase = await ensureClient();
       if (!supabase) return { success: false, error: 'Supabase not configured' };
 
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -28,7 +46,7 @@ export class AuthService {
 
   static async logout(): Promise<ApiResponse<void>> {
     try {
-      const supabase = getSupabase();
+      const supabase = await ensureClient();
       if (!supabase) return { success: false, error: 'Supabase not configured' };
 
       const { error } = await supabase.auth.signOut();
@@ -41,7 +59,7 @@ export class AuthService {
 
   static async getCurrentUser(): Promise<ApiResponse<User>> {
     try {
-      const supabase = getSupabase();
+      const supabase = await ensureClient();
       if (!supabase) return { success: false, error: 'Supabase not configured' };
 
       const {
@@ -66,6 +84,9 @@ export class AuthService {
 
   static async updateProfile(name: string, email: string): Promise<ApiResponse<User>> {
     try {
+      const supabase = await ensureClient();
+      if (!supabase) return { success: false, error: 'Supabase not configured' };
+
       const { data, error } = await supabase.auth.updateUser({ data: { full_name: name } });
       if (error) return { success: false, error: error.message };
       const user = data.user;

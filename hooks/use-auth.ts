@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { User as SupabaseUser } from '@supabase/supabase-js';
 import { getSupabase } from '@/lib/supabaseClient';
+import { createBrowserClientFromConfig } from '@/lib/supabase/browser';
 import { User, UserRole } from '@/lib/types';
 
 interface UseAuthReturn {
@@ -36,7 +37,21 @@ export function useAuth(): UseAuthReturn {
   const [loading, setLoading] = useState(true);
 
   const loadSession = useCallback(async () => {
-    const client = getSupabase();
+    let client = getSupabase();
+    if (!client && typeof window !== 'undefined') {
+      try {
+        const res = await fetch('/api/runtime-config');
+        if (res.ok) {
+          const { url, anonKey } = await res.json();
+          if (url && anonKey) {
+            client = createBrowserClientFromConfig(url, anonKey);
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+
     if (!client) {
       setLoading(false);
       return;
@@ -53,22 +68,52 @@ export function useAuth(): UseAuthReturn {
   useEffect(() => {
     loadSession();
 
-    const client = getSupabase();
-    if (!client) return;
+    const setupListener = async () => {
+      let client = getSupabase();
+      if (!client && typeof window !== 'undefined') {
+        try {
+          const res = await fetch('/api/runtime-config');
+          if (res.ok) {
+            const { url, anonKey } = await res.json();
+            if (url && anonKey) {
+              client = createBrowserClientFromConfig(url, anonKey);
+            }
+          }
+        } catch {
+          // ignore
+        }
+      }
 
-    const { data: authListener } = client.auth.onAuthStateChange((_event, session) => {
-      setUser(mapSupabaseUser(session?.user || null));
-      setLoading(false);
+      if (!client) return;
+
+      const { data: authListener } = client.auth.onAuthStateChange((_event, session) => {
+        setUser(mapSupabaseUser(session?.user || null));
+        setLoading(false);
+      });
+
+      return () => authListener?.subscription?.unsubscribe();
+    };
+
+    let cleanup: void | (() => void);
+    setupListener().then((fn) => {
+      cleanup = fn as any;
     });
-
     return () => {
-      authListener?.subscription?.unsubscribe();
+      if (cleanup) cleanup();
     };
   }, [loadSession]);
 
   const login = useCallback(async (email: string, password: string) => {
     setLoading(true);
-    const client = getSupabase();
+    let client = getSupabase();
+    if (!client && typeof window !== 'undefined') {
+      const res = await fetch('/api/runtime-config');
+      if (res.ok) {
+        const { url, anonKey } = await res.json();
+        if (url && anonKey) client = createBrowserClientFromConfig(url, anonKey);
+      }
+    }
+
     if (!client) {
       setLoading(false);
       throw new Error('Supabase not configured');
@@ -84,7 +129,21 @@ export function useAuth(): UseAuthReturn {
 
   const signup = useCallback(async (email: string, password: string) => {
     setLoading(true);
-    const { error } = await supabase.auth.signUp(
+    let client = getSupabase();
+    if (!client && typeof window !== 'undefined') {
+      const res = await fetch('/api/runtime-config');
+      if (res.ok) {
+        const { url, anonKey } = await res.json();
+        if (url && anonKey) client = createBrowserClientFromConfig(url, anonKey);
+      }
+    }
+
+    if (!client) {
+      setLoading(false);
+      throw new Error('Supabase not configured');
+    }
+
+    const { error } = await client.auth.signUp(
       { email, password },
       { emailRedirectTo: `${window.location.origin}/auth/callback` },
     );
@@ -96,7 +155,18 @@ export function useAuth(): UseAuthReturn {
   }, []);
 
   const logout = useCallback(async () => {
-    await supabase.auth.signOut();
+    let client = getSupabase();
+    if (!client && typeof window !== 'undefined') {
+      const res = await fetch('/api/runtime-config');
+      if (res.ok) {
+        const { url, anonKey } = await res.json();
+        if (url && anonKey) client = createBrowserClientFromConfig(url, anonKey);
+      }
+    }
+
+    if (!client) return;
+
+    await client.auth.signOut();
     setUser(null);
   }, []);
 

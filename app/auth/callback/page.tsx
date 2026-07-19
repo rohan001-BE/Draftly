@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getSupabase } from '@/lib/supabaseClient';
+import { createBrowserClientFromConfig } from '@/lib/supabase/browser';
 import { Button } from '@/components/ui/button';
 
 export default function AuthCallbackPage() {
@@ -38,7 +39,19 @@ export default function AuthCallbackPage() {
         return;
       }
 
-      const client = getSupabase();
+      let client = getSupabase();
+      if (!client && typeof window !== 'undefined') {
+        try {
+          const res = await fetch('/api/runtime-config');
+          if (res.ok) {
+            const { url, anonKey } = await res.json();
+            if (url && anonKey) client = createBrowserClientFromConfig(url, anonKey);
+          }
+        } catch {
+          // ignore
+        }
+      }
+
       if (!client) {
         setError('Supabase not configured');
         setMessage('Verification failed');
