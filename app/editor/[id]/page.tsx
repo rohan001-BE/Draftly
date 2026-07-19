@@ -22,7 +22,7 @@ export default function EditorPage() {
   const docId = params.id as string;
   const editorRef = useRef<RichTextEditorHandle>(null);
 
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const {
     title,
     initialContent,
@@ -37,6 +37,11 @@ export default function EditorPage() {
     setCurrentContent,
     save,
   } = useDocument(docId);
+
+  const handleLogout = useCallback(async () => {
+    await logout();
+    router.push('/login');
+  }, [logout, router]);
 
   const shareDialog = useDialogState();
   const importDialog = useDialogState();
@@ -193,6 +198,7 @@ export default function EditorPage() {
         onDownload={!isReadOnly ? handleDownload : undefined}
         onSave={handleSave}
         onBack={handleBack}
+        onLogout={handleLogout}
         collaborators={collaborators}
         documentInfo={
           documentForPanel ? (
