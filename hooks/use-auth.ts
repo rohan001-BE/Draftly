@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { User as SupabaseUser } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabaseClient';
+import { getSupabase } from '@/lib/supabaseClient';
 import { User, UserRole } from '@/lib/types';
 
 interface UseAuthReturn {
@@ -36,9 +36,15 @@ export function useAuth(): UseAuthReturn {
   const [loading, setLoading] = useState(true);
 
   const loadSession = useCallback(async () => {
+    const client = getSupabase();
+    if (!client) {
+      setLoading(false);
+      return;
+    }
+
     const {
       data: { session },
-    } = await supabase.auth.getSession();
+    } = await client.auth.getSession();
 
     setUser(mapSupabaseUser(session?.user || null));
     setLoading(false);
@@ -47,7 +53,10 @@ export function useAuth(): UseAuthReturn {
   useEffect(() => {
     loadSession();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const client = getSupabase();
+    if (!client) return;
+
+    const { data: authListener } = client.auth.onAuthStateChange((_event, session) => {
       setUser(mapSupabaseUser(session?.user || null));
       setLoading(false);
     });
@@ -59,7 +68,13 @@ export function useAuth(): UseAuthReturn {
 
   const login = useCallback(async (email: string, password: string) => {
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const client = getSupabase();
+    if (!client) {
+      setLoading(false);
+      throw new Error('Supabase not configured');
+    }
+
+    const { error } = await client.auth.signInWithPassword({ email, password });
     setLoading(false);
 
     if (error) {

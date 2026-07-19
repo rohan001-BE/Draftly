@@ -1,9 +1,12 @@
 import { User, ApiResponse } from '@/lib/types';
-import { supabase } from '@/lib/supabaseClient';
+import { getSupabase } from '@/lib/supabaseClient';
 
 export class AuthService {
   static async login(email: string, password: string): Promise<ApiResponse<User>> {
     try {
+      const supabase = getSupabase();
+      if (!supabase) return { success: false, error: 'Supabase not configured' };
+
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) return { success: false, error: error.message };
       const user = data.user;
@@ -25,6 +28,9 @@ export class AuthService {
 
   static async logout(): Promise<ApiResponse<void>> {
     try {
+      const supabase = getSupabase();
+      if (!supabase) return { success: false, error: 'Supabase not configured' };
+
       const { error } = await supabase.auth.signOut();
       if (error) return { success: false, error: error.message };
       return { success: true };
@@ -35,6 +41,9 @@ export class AuthService {
 
   static async getCurrentUser(): Promise<ApiResponse<User>> {
     try {
+      const supabase = getSupabase();
+      if (!supabase) return { success: false, error: 'Supabase not configured' };
+
       const {
         data: { session },
       } = await supabase.auth.getSession();

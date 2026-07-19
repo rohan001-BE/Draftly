@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
+import { getSupabase } from '@/lib/supabaseClient';
 import { Button } from '@/components/ui/button';
 
 export default function AuthCallbackPage() {
@@ -38,7 +38,15 @@ export default function AuthCallbackPage() {
         return;
       }
 
-      const { error: authError } = await supabase.auth.setSession({
+      const client = getSupabase();
+      if (!client) {
+        setError('Supabase not configured');
+        setMessage('Verification failed');
+        setIsLoading(false);
+        return;
+      }
+
+      const { error: authError } = await client.auth.setSession({
         access_token: accessToken,
         refresh_token: refreshToken,
       });
