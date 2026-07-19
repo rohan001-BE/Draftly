@@ -95,11 +95,11 @@ export function EditorToolbar({
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className={`relative border-b border-slate-200/80 bg-white/85 shadow-[0_4px_24px_-12px_rgba(59,130,246,0.15)] backdrop-blur-xl ${className || ''}`}
+      className={`relative border border-slate-200/80 bg-white/95 shadow-[0_18px_40px_-24px_rgba(59,130,246,0.18)] backdrop-blur-3xl ${className || ''}`}
     >
-      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-blue-400/30 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
 
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-2 overflow-x-auto px-4 py-2.5 sm:px-6">
+      <div className="mx-auto flex max-w-7xl justify-center flex-wrap items-center gap-3 overflow-x-auto px-4 py-3 sm:px-6">
         <div className="mr-2 hidden items-center gap-2 rounded-xl border border-slate-200/80 bg-slate-50/80 px-3 py-1.5 sm:flex">
           <Type className="h-3.5 w-3.5 text-blue-600" />
           <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Format</span>
@@ -120,13 +120,13 @@ export function EditorToolbar({
                   onClick={() => onAction?.(button.id as EditorAction)}
                   disabled={isButtonDisabled}
                   title={`${button.label}${button.shortcut ? ` (${button.shortcut})` : ''}`}
-                  className={`h-9 w-9 rounded-xl p-0 transition-all duration-200 ${
+                  className={`h-11 w-11 rounded-2xl p-0 transition-all duration-200 ${
                     isActive
-                      ? 'bg-gradient-to-br from-blue-600 to-violet-500 text-white shadow-md shadow-blue-500/25 hover:opacity-90'
-                      : 'text-slate-500 hover:bg-blue-50 hover:text-blue-700'
+                      ? 'bg-gradient-to-br from-primary to-secondary text-white shadow-xl shadow-primary/20 hover:opacity-95'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                   } ${isButtonDisabled ? 'cursor-not-allowed opacity-40' : ''}`}
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-5 w-5" />
                 </Button>
               );
             })}

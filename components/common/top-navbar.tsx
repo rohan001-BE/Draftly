@@ -83,11 +83,11 @@ export function TopNavbar({
       initial={{ opacity: 0, y: -12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="sticky top-0 z-40 border-b border-white/60 bg-white/70 shadow-[0_8px_32px_-16px_rgba(59,130,246,0.15)] backdrop-blur-2xl"
+      className="sticky top-0 z-40 border border-slate-200/80 bg-white/95 shadow-[0_22px_70px_-30px_rgba(59,130,246,0.24)] backdrop-blur-3xl"
     >
-      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-blue-400/40 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />
 
-      <div className="relative mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6 sm:py-0">
+      <div className="relative mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6 sm:py-4">
         <div className="flex w-full items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
             {!isEditor ? (
@@ -115,18 +115,18 @@ export function TopNavbar({
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={onBack}
-                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-slate-200/80 bg-white/80 text-slate-700 shadow-sm"
+                  className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-3xl border border-slate-200/80 bg-white text-slate-700 shadow-lg transition hover:-translate-y-0.5"
                   title="Back to Dashboard"
                 >
-                  <ArrowLeft className="h-4 w-4" />
+                  <ArrowLeft className="h-5 w-5" />
                 </motion.button>
               ) : (
                 <Link
                   href="/dashboard"
-                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-slate-200/80 bg-white/80 text-slate-700 shadow-sm transition hover:scale-105"
+                  className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-3xl border border-slate-200/80 bg-white text-slate-700 shadow-lg transition hover:-translate-y-0.5"
                   title="Back to Dashboard"
                 >
-                  <ArrowLeft className="h-4 w-4" />
+                  <ArrowLeft className="h-5 w-5" />
                 </Link>
               )
             ) : null}
@@ -177,7 +177,7 @@ export function TopNavbar({
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 cursor-pointer"
+                      className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200/80 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 cursor-pointer"
                     >
                       <SlidersHorizontal className="h-3.5 w-3.5" />
                       <span>Actions</span>
@@ -241,14 +241,14 @@ export function TopNavbar({
                           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">File Actions</span>
                           <div className="flex flex-col gap-2">
                             {!isReadOnly && onImport ? (
-                              <Button variant="outline" onClick={onImport} className="h-10 w-full gap-2 rounded-xl text-xs text-slate-700 dark:text-slate-350 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm justify-start px-4 cursor-pointer">
+                              <Button onClick={onImport} className="h-10 w-full gap-2 rounded-xl bg-gradient-to-r from-violet-600 via-fuchsia-500 to-pink-500 text-xs font-semibold text-white shadow-lg shadow-fuchsia-300/30 justify-start px-4 cursor-pointer hover:brightness-110">
                                 <Upload className="h-4 w-4" />
                                 <span>Import Word / Markdown</span>
                               </Button>
                             ) : null}
 
                             {!isReadOnly && onDownload ? (
-                              <Button variant="outline" onClick={onDownload} className="h-10 w-full gap-2 rounded-xl text-xs text-slate-700 dark:text-slate-350 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm justify-start px-4 cursor-pointer">
+                              <Button onClick={onDownload} className="h-10 w-full gap-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-xs font-semibold text-white shadow-lg shadow-orange-300/30 justify-start px-4 cursor-pointer hover:brightness-110">
                                 <Download className="h-4 w-4" />
                                 <span>Download Document</span>
                               </Button>
@@ -292,39 +292,37 @@ export function TopNavbar({
                 {documentInfo ? <div className="block mr-1">{documentInfo}</div> : null}
 
                 {!isReadOnly && onImport ? (
-                  <Button variant="outline" size="sm" onClick={onImport} className="h-9 gap-1.5 rounded-xl px-2.5 text-xs sm:px-3 cursor-pointer">
-                    <Upload className="h-3.5 w-3.5" />
+                  <Button onClick={onImport} className="h-10 gap-2 rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-500 to-pink-500 px-3 text-sm font-semibold text-white shadow-lg shadow-fuchsia-300/30 hover:brightness-110">
+                    <Upload className="h-4 w-4" />
                     <span className="hidden md:inline">Import</span>
                   </Button>
                 ) : null}
 
                 {!isReadOnly && onDownload ? (
-                  <Button variant="outline" size="sm" onClick={onDownload} className="h-9 gap-1.5 rounded-xl px-2.5 text-xs sm:px-3 cursor-pointer">
-                    <Download className="h-3.5 w-3.5" />
+                  <Button onClick={onDownload} className="h-10 gap-2 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 px-3 text-sm font-semibold text-white shadow-lg shadow-orange-300/30 hover:brightness-110">
+                    <Download className="h-4 w-4" />
                     <span className="hidden md:inline">Download</span>
                   </Button>
                 ) : null}
 
                 {!isReadOnly && onSave ? (
                   <Button
-                    size="sm"
                     onClick={onSave}
                     disabled={isSaving || !isDirty}
-                    className="h-9 cursor-pointer gap-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-3 text-xs font-semibold text-white shadow-sm hover:opacity-90 disabled:opacity-50"
+                    className="h-10 gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500 px-3 text-sm font-semibold text-white shadow-lg hover:opacity-95 disabled:opacity-50"
                   >
-                    <Save className="h-3.5 w-3.5" />
-                    <span className="hidden md:inline">Save</span>
+                    <Save className="h-4 w-4" />
+                    <span>Save</span>
                   </Button>
                 ) : null}
 
                 {onShare ? (
                   <Button
-                    size="sm"
                     onClick={onShare}
-                    className="h-9 gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 via-cyan-500 to-violet-500 px-3 text-xs font-semibold text-white shadow-sm hover:opacity-90 cursor-pointer"
+                    className="h-10 gap-2 rounded-2xl bg-gradient-to-r from-blue-600 via-violet-500 to-fuchsia-500 px-3 text-sm font-semibold text-white shadow-lg hover:opacity-95 cursor-pointer"
                   >
-                    <Share2 className="h-3.5 w-3.5" />
-                    <span className="hidden md:inline">Share</span>
+                    <Share2 className="h-4 w-4" />
+                    <span>Share</span>
                   </Button>
                 ) : null}
               </div>

@@ -178,7 +178,7 @@ export default function EditorPage() {
   }
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-y-auto bg-[#dfe3ea]">
+    <div className="relative min-h-screen flex flex-col overflow-y-auto bg-[#dfe3ea] pb-5">
       <TopNavbar
         user={user ?? undefined}
         isEditor
@@ -201,7 +201,7 @@ export default function EditorPage() {
         }
       />
 
-      <main className="relative flex min-h-0 flex-1 flex-col">
+      <main className="relative flex min-h-0 flex-1 flex-col pt-4">
         <RichTextEditor
           ref={editorRef}
           content={initialContent ?? EMPTY_TIPTAP_DOCUMENT}
