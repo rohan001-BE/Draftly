@@ -15,11 +15,12 @@ import {
   Settings,
   ChevronDown,
   Sparkles,
+  SlidersHorizontal,
 } from 'lucide-react';
 import { User } from '@/lib/types';
 import { UserAvatar } from './user-avatar';
 import { SearchBar } from './search-bar';
-import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Sidebar } from './sidebar';
 import { Button } from '@/components/ui/button';
 import {
@@ -169,6 +170,166 @@ export function TopNavbar({
           </div>
 
           <div className="flex items-center gap-2">
+            {isEditor ? (
+              <div className="sm:hidden">
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 cursor-pointer"
+                    >
+                      <SlidersHorizontal className="h-3.5 w-3.5" />
+                      <span>Actions</span>
+                    </motion.button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="w-full max-w-[95vw] sm:w-80 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-0 shadow-2xl">
+                    <SheetHeader>
+                      <SheetTitle>Document Actions</SheetTitle>
+                    </SheetHeader>
+                    <div className="flex flex-col gap-5 p-5">
+                      {/* Save */}
+                      {!isReadOnly && onSave ? (
+                        <div className="space-y-1.5">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Status</span>
+                          <Button
+                            onClick={onSave}
+                            disabled={isSaving || !isDirty}
+                            className="h-10 w-full cursor-pointer gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-xs font-semibold text-white shadow-sm hover:opacity-90 disabled:opacity-50 justify-start px-4"
+                          >
+                            <Save className="h-4 w-4" />
+                            <span>{isSaving ? 'Saving Changes...' : isDirty ? 'Save Changes' : 'All Changes Saved'}</span>
+                          </Button>
+                        </div>
+                      ) : null}
+
+                      {/* Share */}
+                      {onShare ? (
+                        <div className="space-y-1.5">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Collaboration</span>
+                          <Button
+                            onClick={onShare}
+                            className="h-10 w-full gap-2 rounded-xl bg-gradient-to-r from-blue-600 via-cyan-500 to-violet-500 text-xs font-semibold text-white shadow-sm hover:opacity-90 justify-start px-4"
+                          >
+                            <Share2 className="h-4 w-4" />
+                            <span>Share Document</span>
+                          </Button>
+                        </div>
+                      ) : null}
+
+                      {/* Collaborators list */}
+                      {collaborators.length > 0 ? (
+                        <div className="space-y-2">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Active Collaborators</span>
+                          <div className="flex flex-col gap-1.5 max-h-[140px] overflow-y-auto pr-1">
+                            {collaborators.map((collab) => (
+                              <div key={collab.id} className="flex items-center gap-2 rounded-xl border border-slate-100 dark:border-slate-800 p-2 bg-slate-50/50 dark:bg-slate-900/30">
+                                <UserAvatar user={collab} size="xs" showRing />
+                                <div className="min-w-0 flex-1 flex flex-col items-start">
+                                  <p className="truncate text-xs font-bold text-slate-900 dark:text-slate-100">{collab.name}</p>
+                                  <p className="truncate text-[10px] text-slate-500 capitalize">{collab.role}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+
+                      {/* Import / Export */}
+                      {(!isReadOnly && onImport) || (!isReadOnly && onDownload) ? (
+                        <div className="space-y-2">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">File Actions</span>
+                          <div className="flex flex-col gap-2">
+                            {!isReadOnly && onImport ? (
+                              <Button variant="outline" onClick={onImport} className="h-10 w-full gap-2 rounded-xl text-xs text-slate-700 dark:text-slate-350 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm justify-start px-4 cursor-pointer">
+                                <Upload className="h-4 w-4" />
+                                <span>Import Word / Markdown</span>
+                              </Button>
+                            ) : null}
+
+                            {!isReadOnly && onDownload ? (
+                              <Button variant="outline" onClick={onDownload} className="h-10 w-full gap-2 rounded-xl text-xs text-slate-700 dark:text-slate-350 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm justify-start px-4 cursor-pointer">
+                                <Download className="h-4 w-4" />
+                                <span>Download Document</span>
+                              </Button>
+                            ) : null}
+                          </div>
+                        </div>
+                      ) : null}
+
+                      {/* Document Details Info */}
+                      {documentInfo ? (
+                        <div className="space-y-2 border-t border-slate-100 dark:border-slate-800 pt-4">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Document Info</span>
+                          <div className="w-full text-xs text-slate-600 dark:text-slate-400">
+                            {documentInfo}
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
+            ) : null}
+
+            {isEditor ? (
+              <div className="hidden sm:flex items-center gap-2">
+                {collaborators.length > 0 ? (
+                  <div className="mr-2 flex -space-x-2.5 overflow-hidden">
+                    {collaborators.map((collab) => (
+                      <motion.div
+                        key={collab.id}
+                        whileHover={{ scale: 1.1, zIndex: 10 }}
+                        className="inline-block overflow-hidden rounded-full ring-2 ring-white"
+                        title={`${collab.name} (${collab.email}) - ${collab.role}`}
+                      >
+                        <UserAvatar user={collab} size="xs" showRing />
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : null}
+
+                {documentInfo ? <div className="block mr-1">{documentInfo}</div> : null}
+
+                {!isReadOnly && onImport ? (
+                  <Button variant="outline" size="sm" onClick={onImport} className="h-9 gap-1.5 rounded-xl px-2.5 text-xs sm:px-3 cursor-pointer">
+                    <Upload className="h-3.5 w-3.5" />
+                    <span className="hidden md:inline">Import</span>
+                  </Button>
+                ) : null}
+
+                {!isReadOnly && onDownload ? (
+                  <Button variant="outline" size="sm" onClick={onDownload} className="h-9 gap-1.5 rounded-xl px-2.5 text-xs sm:px-3 cursor-pointer">
+                    <Download className="h-3.5 w-3.5" />
+                    <span className="hidden md:inline">Download</span>
+                  </Button>
+                ) : null}
+
+                {!isReadOnly && onSave ? (
+                  <Button
+                    size="sm"
+                    onClick={onSave}
+                    disabled={isSaving || !isDirty}
+                    className="h-9 cursor-pointer gap-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-3 text-xs font-semibold text-white shadow-sm hover:opacity-90 disabled:opacity-50"
+                  >
+                    <Save className="h-3.5 w-3.5" />
+                    <span className="hidden md:inline">Save</span>
+                  </Button>
+                ) : null}
+
+                {onShare ? (
+                  <Button
+                    size="sm"
+                    onClick={onShare}
+                    className="h-9 gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 via-cyan-500 to-violet-500 px-3 text-xs font-semibold text-white shadow-sm hover:opacity-90 cursor-pointer"
+                  >
+                    <Share2 className="h-3.5 w-3.5" />
+                    <span className="hidden md:inline">Share</span>
+                  </Button>
+                ) : null}
+              </div>
+            ) : null}
+
             {!isEditor && showSearch ? (
               <div className="hidden sm:block">
                 <SearchBar value={searchValue} onChange={onSearchChange} />
@@ -254,63 +415,7 @@ export function TopNavbar({
           </div>
         ) : null}
 
-        {isEditor ? (
-          <div className="flex w-full flex-wrap items-center gap-2 justify-between sm:w-auto">
-            {collaborators.length > 0 ? (
-              <div className="mr-2 hidden flex-wrap items-center gap-2 sm:flex -space-x-2.5 overflow-hidden">
-                {collaborators.map((collab) => (
-                  <motion.div
-                    key={collab.id}
-                    whileHover={{ scale: 1.1, zIndex: 10 }}
-                    className="inline-block overflow-hidden rounded-full ring-2 ring-white"
-                    title={`${collab.name} (${collab.email}) - ${collab.role}`}
-                  >
-                    <UserAvatar user={collab} size="sm" showRing />
-                  </motion.div>
-                ))}
-              </div>
-            ) : null}
 
-            {!isReadOnly && onImport ? (
-              <Button variant="outline" size="sm" onClick={onImport} className="h-9 gap-1.5 rounded-xl px-2.5 text-xs sm:px-3">
-                <Upload className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Import</span>
-              </Button>
-            ) : null}
-
-            {!isReadOnly && onDownload ? (
-              <Button variant="outline" size="sm" onClick={onDownload} className="h-9 gap-1.5 rounded-xl px-2.5 text-xs sm:px-3">
-                <Download className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Download</span>
-              </Button>
-            ) : null}
-
-            {!isReadOnly && onSave ? (
-              <Button
-                size="sm"
-                onClick={onSave}
-                disabled={isSaving || !isDirty}
-                className="h-9 cursor-pointer gap-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-3 text-xs font-semibold text-white shadow-sm hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <Save className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Save</span>
-              </Button>
-            ) : null}
-
-            {onShare ? (
-              <Button
-                size="sm"
-                onClick={onShare}
-                className="h-9 gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 via-cyan-500 to-violet-500 px-3 text-xs font-semibold text-white shadow-sm hover:opacity-90"
-              >
-                <Share2 className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Share</span>
-              </Button>
-            ) : null}
-
-            {documentInfo ? <div className="block">{documentInfo}</div> : null}
-          </div>
-        ) : null}
       </div>
     </motion.nav>
   );
